@@ -19,6 +19,7 @@ from data import ModelNet40
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import sklearn.metrics as metrics
 import numpy as np
+from ScaDsDataLoader import *
 
 
 def parse_args():
@@ -35,12 +36,15 @@ def parse_args():
     parser.add_argument('--min_lr', default=0.005, type=float, help='min lr')
     parser.add_argument('--weight_decay', type=float, default=2e-4, help='decay rate')
     parser.add_argument('--seed', type=int, help='random seed')
-    parser.add_argument('--workers', default=8, type=int, help='workers')
+    parser.add_argument('--workers', default=10, type=int, help='workers')
+    parser.add_argument('--directory', required=True, help='directory, where data is located')
+    parser.add_argument('--save_text_files', action='store_true', help='should sampled points be safed to txt file', default=False)
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
+    data_path = args.directory
     if args.seed is None:
         args.seed = np.random.randint(1, 10000)
     os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
@@ -118,11 +122,19 @@ def main():
         logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title="ModelNet" + args.model, resume=True)
         optimizer_dict = checkpoint['optimizer']
 
-    printf('==> Preparing data..')
-    train_loader = DataLoader(ModelNet40(partition='train', num_points=args.num_points), num_workers=args.workers,
-                              batch_size=args.batch_size, shuffle=True, drop_last=True)
-    test_loader = DataLoader(ModelNet40(partition='test', num_points=args.num_points), num_workers=args.workers,
-                             batch_size=args.batch_size // 2, shuffle=False, drop_last=False)
+    printf('==> Preparing data..')    
+
+    train_dataset = ScaDSDataLoader(root=data_path, args=args, split='train', process_data=args.process_data, save_text_files=args.save_text_files)
+    test_dataset = ScaDSDataLoader(root=data_path, args=args, split='test', process_data=args.process_data)
+    
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.workers, drop_last=True)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.workers)
+    
+
+    # train_loader = DataLoader(ModelNet40(partition='train', num_points=args.num_points), num_workers=args.workers,
+    #                          batch_size=args.batch_size, shuffle=True, drop_last=True)
+    # test_loader = DataLoader(ModelNet40(partition='test', num_points=args.num_points), num_workers=args.workers,
+    #                          batch_size=args.batch_size // 2, shuffle=False, drop_last=False)
 
     optimizer = torch.optim.SGD(net.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=args.weight_decay)
     if optimizer_dict is not None:
