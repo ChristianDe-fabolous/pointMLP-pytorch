@@ -41,7 +41,9 @@ def parse_args():
     parser.add_argument('--save_text_files', action='store_true', help='should sampled points be safed to txt file', default=False)
     parser.add_argument('--process_data', action='store_true', default=False, help='save data offline')
     parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampiling')
-    
+    parser.add_argument('--use_normals', action='store_true', default=False, help='use normals')
+    parser.add_argument('--process_data', action='store_true', default=False, help='save data offline')
+
     return parser.parse_args()
 
 
