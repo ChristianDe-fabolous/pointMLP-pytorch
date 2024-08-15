@@ -28,8 +28,18 @@ setup(
             name="pointnet2_ops._ext",
             sources=_ext_sources,
             extra_compile_args={
-                "cxx": ["-O3"],
-                "nvcc": ["-O3", "-Xfatbin", "-compress-all"],
+                "nvcc": [
+                    "-O3",
+                    "-Xfatbin",
+                    "-compress-all",
+                    "-gencode", "arch=compute_37,code=sm_37",
+                    "-gencode", "arch=compute_50,code=sm_50",
+                    "-gencode", "arch=compute_60,code=sm_60",
+                    "-gencode", "arch=compute_61,code=sm_61",
+                    "-gencode", "arch=compute_62,code=sm_62",
+                    "-gencode", "arch=compute_70,code=sm_70",
+                    "-gencode", "arch=compute_75,code=sm_75",  # Added for RTX 2080 Ti
+                ],
             },
             include_dirs=[osp.join(this_dir, _ext_src_root, "include")],
         )
