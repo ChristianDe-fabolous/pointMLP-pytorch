@@ -43,6 +43,7 @@ def parse_args():
     parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampiling')
     parser.add_argument('--use_normals', action='store_true', default=False, help='use normals')
     parser.add_argument('--num_category', default=4, required=True, type=int,  help='num categories')
+    parser.add_argument('--use_rgb', action='store_true', default=False, help='should rgb values be used')
 
     return parser.parse_args()
 
