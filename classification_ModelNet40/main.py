@@ -42,6 +42,7 @@ def parse_args():
     parser.add_argument('--process_data', action='store_true', default=False, help='save data offline')
     parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampiling')
     parser.add_argument('--use_normals', action='store_true', default=False, help='use normals')
+    parser.add_argument('--num_category', default=4, required=True, type=int,  help='num categories')
 
     return parser.parse_args()
 
