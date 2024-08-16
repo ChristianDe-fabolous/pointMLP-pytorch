@@ -218,7 +218,7 @@ class IOStream():
 def cal_loss(pred, gold, smoothing=True):
     ''' Calculate cross entropy loss, apply label smoothing if needed. '''
 
-    gold = gold.contiguous().view(-1)
+    gold = gold.contiguous().view(-1).long()
 
     if smoothing:
         eps = 0.2
