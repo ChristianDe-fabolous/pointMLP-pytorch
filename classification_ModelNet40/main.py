@@ -20,7 +20,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 import sklearn.metrics as metrics
 import numpy as np
 from ScaDsDataLoader import *
-
+import time
 
 def parse_args():
     """Parameters"""
@@ -130,12 +130,18 @@ def main():
 
     printf('==> Preparing data..')    
 
+    start_time = time.time()
     train_dataset = ScaDSDataLoader(root=data_path, args=args, split='train', process_data=args.process_data, save_text_files=args.save_text_files)
     test_dataset = ScaDSDataLoader(root=data_path, args=args, split='test', process_data=args.process_data)
-    
+    between_time = time.time()
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.workers, drop_last=True)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.workers)
-    
+    end_time = time.time()
+
+
+    print(f"Time taken for ScaDSDataLoader: {between_time - start_time} seconds")
+    print(f"Time taken for DataLoader: {end_time - between_time} seconds")
+    print(f"Time taken in total: {end_time - start_time} seconds")
 
     # train_loader = DataLoader(ModelNet40(partition='train', num_points=args.num_points), num_workers=args.workers,
     #                          batch_size=args.batch_size, shuffle=True, drop_last=True)
